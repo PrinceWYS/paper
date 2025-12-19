@@ -16,21 +16,14 @@
 
 \section{国内外研究现状}
 \subsection{新视角合成与三维重建}
+三维场景旨在从二维的平面图像观测中，恢复出场景的三维几何结构与外观属性，是连接物理世界与数字世界的关键技术之一，在虚拟显示、增强现实、机器人导航及自动驾驶环境感知等领域得到了广泛的应用。近年来，随着深度学习与计算机图形学的深度融合，三维重建技术经历了从传统几何建模到隐式神经表示，再到显式高斯表示的范式转变。
+
+在三维重建的发展历程中，Mildenhall等人于2020年提出的神经辐射场（Neural Radiance Fields, NeRF\cite{mildenhall2020nerf}）具有里程碑式的意义。NeRF摒弃了传统的网格或体素表示，转而使用多层感知机将场景建模为连续的辐射场函数。通过体渲染（Volume Rendering）技术，NeRF能够从稀疏的二维图像中合成出具有光照一致性的高保真新视角图像，在视图合成质量上显著优于传统的多视图立体几何方法 。然而，尽管NeRF在渲染质量上取得了重大突破，但是其隐式表达的特性也带来了显著的局限性。首先，由于需要对每条光线上的大量采样点进行神经网络查询，导致NeRF的训练时间通常以小时计，渲染速度难以达到实时要求，训练与推理效率低。其次，场景信息被隐式存储在网络权重中，难以像网格或点云那样进行局部的几何修改或物体操作，可编辑性差。
+
+为了解决隐式表示在实时性与可编辑性方面的瓶颈，Kerbl等人于2023年提出了三维高斯溅射（3D Gaussian Splatting, 3DGS\cite{kerbl3Dgaussians}） 。与NeRF不同，3DGS回归了显式的场景表示，利用一组各向异性的三维高斯椭球来参数化场景。
 
 \subsection{多模态大模型与开放词汇理解}
 \subsection{三维语义场构建}
-
-我们可以用includegraphics来插入现有的jpg等格式的图片，
-如\autoref{fig:zju-logo}所示。
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=.3\linewidth]{logo/zju}
-    \caption{\label{fig:zju-logo}浙江大学LOGO}
-\end{figure}
-
-
-\subsection{小节标题}
 
 \section{主要研究内容与本文工作}
 \section{本文组织架构}
