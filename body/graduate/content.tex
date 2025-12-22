@@ -149,8 +149,44 @@ Gaussian Grouping\cite{yeGaussianGroupingSegment2024}通过引入标识符属性
 本章详细介绍了系统相关研究和实现过程中用到的主要技术。首先，本章将对本文设计到的基本的三维高斯喷溅技术进行阐述。其次，针对语义信息的来源，本章将对选用的多模态大语言模型进行介绍。最后，本章将聚焦于三维语义场的构建范式，介绍当前三维语义场的通用构建技术。
 
 \section{三维高斯喷溅}
+三维高斯泼溅（3D Gaussian Splatting, 3DGS\cite{kerbl3DGaussianSplatting2023}）作为一种新兴的显示辐射场表示方法，通过将场景建模为一系列空间分布的高斯点，实现了高保真的新视角合成与实时渲染。
+相比于NeRF\cite{mildenhallNeRFRepresentingScenes2020}通过MLP隐式建模连续密度场的方法，3DGS采用了一种离散且显式的参数化方法。
 
-\section{多模态大语言模型}
+\subsection{显式高斯场参数化}
+在3DGS中，每个高斯点$G(x)$在三维空间中的分布由均值向量$\mu$（代表高斯点的球心位置）和协方差矩阵$\Sigma$定义：
+\begin{equation}
+    \label{3D高斯点的表示}
+    G(x) = exp(-\frac{1}{2} (x - \mu)^T \Sigma^-1 (x - \mu))
+ \end{equation}
+为了确保协方差矩阵$\Sigma$在优化过程中的正定性及其物理意义，3DGS将其分解为一个缩放矩阵$S$和旋转矩阵$R$，即：
+\begin{equation}
+    \label{协方差矩阵的计算方式}
+    \Sigma = R S S^T R^T
+\end{equation}
+其中，$S$由三维缩放向量表示，$R$由旋转四元数表示。
+这种各向异性的表达方式使得高斯点能够自适应地贴合场景中的几何轮廓。
+此外，每个高斯点还携带不透明度$\alpha$以及三阶球谐函数（Spherical Harmonics, SH）系数，用于描述随观测视角变化的颜色外观。
+
+\subsection{基于图块的可微光栅化}
+3DGS的核心优势在于其基于图块的可微光栅化。
+在渲染过程中，三维的高斯点被投影到二维平面上。
+投影的二维高斯，其协方差矩阵$\Sigma^\prime$可由相机变换矩阵$W$和投影的雅可比矩阵$J$近似求得：
+\begin{equation}
+    \label{二维协方差矩阵的计算方式}
+    \Sigma^\prime = J W \Sigma W^T J^T
+\end{equation}
+对于像素位置的颜色渲染，3DGS采用了基于排序的$\alpha$-blending混合算法。给定穿过像素的一条射线，像素点的最终颜色$C$可由沿射线穿过的$N$个高斯点加权聚合而成：
+\begin{equation}
+    \label{二维像素点颜色的计算方式}
+    C = \sum_{i\in N} c_i \alpha_i \prod_{j=1}^{i-1}(1 - \alpha_j) 
+\end{equation}
+其中，$c_i$代表第$i$个高斯点的颜色，$\alpha_i$表示受二维高斯加权的有效不透明度，而$T_i = \prod_{j=1}^{i-1}(1-\alpha_j)$代表了光线传导至第$i$个高斯点时的累积透射率。
+这一物理过程不仅决定了颜色合成，也为本文后续讨论语义特征的嵌入提供了关键的理论基础。
+
+\subsection{自适应密度控制与优化策略}
+
+
+\section{二维语义提取}
 
 \section{三维语义场构建}
 \subsection{Gaussian Grouping}
